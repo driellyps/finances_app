@@ -4,6 +4,21 @@ const Modal = {
   }
 }
 
+const Utils = {
+  formatCurrency(value) {
+    const signal = Number(value) < 0 ? "-" : ""; 
+
+    value = String(value).replace(/\D/g, "");
+    value = Number(value) / 100;
+    value = value.toLocaleString("pt-BR", {
+      style: "currency",
+      currency: "BRL"
+    })
+
+    return signal + value;
+  }
+}
+
 const transactions = [
   {
   id: 1,
@@ -26,11 +41,33 @@ const transactions = [
 ]
 
 const Transaction = {
-  incomes() {
+  all: transactions,
+  add(transaction) {
+    this.all.push(transaction);
 
+    App.reload();
   },
-  expenses() {},
-  total() {}
+  incomes() {
+    let income = 0;
+    this.all.forEach(t => {
+      if(t.amount > 0) {
+        income += t.amount
+      }
+    })
+    return income
+  },
+  expenses() {
+    let expense = 0;
+    this.all.forEach(t => {
+      if(t.amount < 0) {
+        expense += t.amount
+      }
+    })
+    return expense
+  },
+  total() {
+    return this.incomes() + this.expenses()
+  }
 }
 
 const DOM = {
@@ -44,20 +81,45 @@ const DOM = {
   innerHTMLTransaction(transaction) {
     const { description, amount, date } = transaction;
 
-    const tClass = amount > 0 ? "income" : "expense"
+    const tClass = amount > 0 ? "income" : "expense";
+
+    const formatedAmount = Utils.formatCurrency(amount)
 
     const html = `
     <td class="description">${description}</td>
-    <td class="${tClass}">${amount}</td>
+    <td class="${tClass}">${formatedAmount}</td>
     <td class="date">${date}</td>
     <td class="button">
       <img src="./assets/minus.svg" alt="apagar transação">
     </td>`
 
     return html
+  },
+  updateBalance() {
+    document.getElementById('incomeDisplay')
+    .innerHTML = Utils.formatCurrency(Transaction.incomes())
+    document.getElementById('expensesDisplay')
+    .innerHTML = Utils.formatCurrency(Transaction.expenses())
+    document.getElementById('balanceDisplay')
+    .innerHTML = Utils.formatCurrency(Transaction.total())
+  },
+  clearTransactions() {
+    DOM.container.innerHTML = ""
   }
 }
 
-transactions.forEach(t => {
-  DOM.newTransaction(t)
-})
+const App = {
+  init() {
+    Transaction.all.forEach(t => {
+      DOM.newTransaction(t)
+    })
+    
+    DOM.updateBalance();
+  },
+  reload() {
+    DOM.clearTransactions();
+    this.init();
+  }
+}
+
+App.init()
