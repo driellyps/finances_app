@@ -196,6 +196,10 @@ td.expense {
   color: var(--red);
 }
 
+td img {
+  cursor: pointer;
+}
+
 /* ====== Footer ======== */
 footer {
   text-align: center;

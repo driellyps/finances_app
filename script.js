@@ -27,31 +27,25 @@ const Utils = {
   }
 }
 
+const Storage = {
+  get() {
+    return JSON.parse(localStorage.getItem("dev.finances.transactions")) || []
+  },
+  set(transactions) {
+    localStorage.setItem("dev.finances.transactions", JSON.stringify(transactions))
+  }
+}
+
 const Transaction = {
-  all: [
-    {
-    description: "Luz",
-    amount: -50000,
-    date: '12/01/21'
-    },
-    {
-    description: "Website",
-    amount: 200000,
-    date: '13/01/21'
-    },
-    {
-    description: "Água",
-    amount: -30000,
-    date: '13/01/21'
-    }
-  ],
+  all: Storage.get(),
   add(transaction) {
     this.all.push(transaction);
 
     App.reload();
   },
   remove(index) {
-    this.all.splice(index, 1)
+    this.all.splice(index, 1);
+    App.reload()
   },
   incomes() {
     let income = 0;
@@ -78,13 +72,15 @@ const Transaction = {
 
 const DOM = {
   container: document.querySelector('#data-table tbody'),
+
   newTransaction(transaction, index) {
     const tr = document.createElement('tr');
-    tr.innerHTML = this.innerHTMLTransaction(transaction);
+    tr.dataset.index = index;
+    tr.innerHTML = this.innerHTMLTransaction(transaction, index);
 
     this.container.appendChild(tr)
   },
-  innerHTMLTransaction(transaction) {
+  innerHTMLTransaction(transaction, index) {
     const { description, amount, date } = transaction;
 
     const tClass = amount > 0 ? "income" : "expense";
@@ -96,7 +92,7 @@ const DOM = {
     <td class="${tClass}">${formatedAmount}</td>
     <td class="date">${date}</td>
     <td class="button">
-      <img src="./assets/minus.svg" alt="apagar transação">
+      <img onclick="Transaction.remove(${index})" src="./assets/minus.svg" alt="apagar transação">
     </td>`
 
     return html
@@ -159,8 +155,8 @@ const Form = {
 
     try {
       this.validateFields();
-      const newTransaction = this.formatValues();
-      Transaction.add(newTransaction)
+      const transaction = this.formatValues();
+      Transaction.add(transaction)
 
       this.clearFields();
       
@@ -173,11 +169,13 @@ const Form = {
 
 const App = {
   init() {
-    Transaction.all.forEach(t => {
-      DOM.newTransaction(t)
+    Transaction.all.forEach((t, index) => {
+      DOM.newTransaction(t, index)
     })
     
     DOM.updateBalance();
+
+    Storage.set(Transaction.all)
   },
   reload() {
     DOM.clearTransactions();
