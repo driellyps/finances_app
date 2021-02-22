@@ -5,6 +5,14 @@ const Modal = {
 }
 
 const Utils = {
+  formatAmount(value) {
+    return Number(value) * 100
+  },
+  formatDate(date){
+    const splittedDate = date.split("-");
+    return `${splittedDate[2]}/${splittedDate[1]}/${splittedDate[0]}`
+  },
+
   formatCurrency(value) {
     const signal = Number(value) < 0 ? "-" : ""; 
 
@@ -19,33 +27,31 @@ const Utils = {
   }
 }
 
-const transactions = [
-  {
-  id: 1,
-  description: "Luz",
-  amount: -50000,
-  date: '12/01/21'
-  },
-  {
-  id: 2,
-  description: "Website",
-  amount: 200000,
-  date: '13/01/21'
-  },
-  {
-  id: 1,
-  description: "Água",
-  amount: -30000,
-  date: '13/01/21'
-  }
-]
-
 const Transaction = {
-  all: transactions,
+  all: [
+    {
+    description: "Luz",
+    amount: -50000,
+    date: '12/01/21'
+    },
+    {
+    description: "Website",
+    amount: 200000,
+    date: '13/01/21'
+    },
+    {
+    description: "Água",
+    amount: -30000,
+    date: '13/01/21'
+    }
+  ],
   add(transaction) {
     this.all.push(transaction);
 
     App.reload();
+  },
+  remove(index) {
+    this.all.splice(index, 1)
   },
   incomes() {
     let income = 0;
@@ -105,6 +111,63 @@ const DOM = {
   },
   clearTransactions() {
     DOM.container.innerHTML = ""
+  }
+}
+
+const Form = {
+  description: document.querySelector('input#description'),
+  amount: document.querySelector('input#amount'),
+  date: document.querySelector('input#date'),
+  getValues() {
+    return {
+      description: this.description.value,
+      amount: this.amount.value,
+      date: this.date.value,
+    }
+  },
+
+  validateFields() {
+    const { description, amount, date } = this.getValues();
+
+    if(description.trim() === "" || amount.trim() === "" || date.trim() === "") {
+        throw new Error("Preencha todos os campos")
+      }
+  },
+
+  formatValues() {
+    let { description, amount, date } = this.getValues();
+
+    amount = Utils.formatAmount(amount);
+    date = Utils.formatDate(date);
+
+    return {
+      description,
+      amount,
+      date
+    }
+    
+  },
+
+  clearFields() {
+    this.description.value = "";
+    this.amount.value = "";
+    this.date.value = "";
+  },
+
+  submit(event) {
+    event.preventDefault();
+
+    try {
+      this.validateFields();
+      const newTransaction = this.formatValues();
+      Transaction.add(newTransaction)
+
+      this.clearFields();
+      
+      Modal.toggle();
+    } catch (error) {
+      alert(error.message)
+    }
   }
 }
 
