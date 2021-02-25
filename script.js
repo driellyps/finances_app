@@ -6,7 +6,7 @@ const Modal = {
 
 const Utils = {
   formatAmount(value) {
-    return Number(value) * 100
+    return Math.round(value * 100)
   },
   formatDate(date){
     const splittedDate = date.split("-");
@@ -104,6 +104,7 @@ const DOM = {
     .innerHTML = Utils.formatCurrency(Transaction.expenses())
     document.getElementById('balanceDisplay')
     .innerHTML = Utils.formatCurrency(Transaction.total())
+    Balance.totalBalance()
   },
   clearTransactions() {
     DOM.container.innerHTML = ""
@@ -183,4 +184,23 @@ const App = {
   }
 }
 
+
+const Balance = {
+  totalBalance() {
+    const cardTotal = document.querySelector('.card.total')
+    
+    Transaction.total() < 0 ? cardTotal.classList.add('negative') : cardTotal.classList.remove('negative');
+  
+   
+  }
+}
+
 App.init()
+
+const body = document.querySelector('body')
+
+const Dark = {
+  toggle() {
+    body.classList.toggle('active')
+  }
+}

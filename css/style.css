@@ -5,6 +5,10 @@
   --dark-green: #2D4A22;
   --light-grey: #f0f2f5;
   --red: #E92929;
+  --dark-red: #b40320;
+  --header-dark: #242424;
+  --cards-dark: #3a3a3a;
+  --background-dark: #292929;
 }
 
 * {
@@ -120,6 +124,7 @@ header {
   border-radius: 0.25rem;
   margin-bottom: 2rem;
   color: var(--dark-blue);
+  box-shadow: 10px 10px 15px rgba(0, 0, 0, 0.5);
 }
 
 .card h3 {
@@ -138,6 +143,10 @@ header {
 .card.total {
   color: #fff;
   background: var(--green);
+}
+
+.card.total.negative {
+  background: var(--dark-red);
 }
 
 /* ====== Transactions ======== */

@@ -20,7 +20,7 @@
 }
 
 .modal {
-  background: #f0f2f5;
+  background: var(--light-grey);
   padding: 2.4rem;
   width: 90%;
   max-width: 500px;
