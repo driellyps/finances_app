@@ -22,7 +22,7 @@
 
 ## 💻 Project
 
-Control your finances💰using this app
+This app helps you to organize your finances. You can add expenses and incomes and see your balance change in real time.
 
 
 *This project is for the **[MaratonaDiscover](https://maratonadiscover.rocketseat.com.br/)**, realized by **[@Rocketseat](https://github.com/Rocketseat)**.
